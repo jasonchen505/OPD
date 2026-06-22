@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# Large directories
+checkpoint/
+model/
+logs/
+outputs/
+ray_tmp/
+*.zip
+
+# Datasets (large parquet/json)
+datasets/
+
+# Reproduction / notes (local)
+reproduction_learning_notes/

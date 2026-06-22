@@ -26,7 +26,7 @@ except ImportError:
 #                   Global constants / variables                              #
 # --------------------------------------------------------------------------- #
 DATA_DIR = "../data"
-# MODEL_FOLDER = "../../model/Qwen3-1.7B-SFT-DAPO-4B-filtered"
+MODEL_FOLDER = "../../model"
 
 def extract_max_number(path):
     """Extract all numbers from a path and return the largest one for sorting."""
@@ -45,7 +45,7 @@ except FileNotFoundError:
 
 # Active model list.
 MODEL_NAMES = MODEL_NAMES_CANDIDATES
-MODEL_NAMES = ["../../model/Qwen3-4B"]
+MODEL_NAMES = ["/home/chenyizhou/OPD/model/DeepSeek-R1-Distill-Qwen-1.5B-OPD-final"]
 
 TASKS = [
     {"name": "AIME24", "path": f"{DATA_DIR}/AIME24/test.parquet", "N": 16},
@@ -54,7 +54,7 @@ TASKS = [
 ]
 
 PROMPT_TEMPLATE = """{problem} Please reason step by step, and put your final answer within \\boxed{{}}."""
-MAX_TOKENS  = 31744
+MAX_TOKENS  = 16384
 TEMPERATURE = 0.7
 TOP_P       = 0.95
 REPLACE     = False
@@ -124,7 +124,7 @@ def worker_process(args_tuple):
         llm = LLM(
             model=model_name,
             trust_remote_code=True,
-            gpu_memory_utilization=0.9,
+            gpu_memory_utilization=0.7,
             tensor_parallel_size=1,
         )
         

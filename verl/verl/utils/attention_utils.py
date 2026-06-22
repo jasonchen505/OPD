@@ -25,7 +25,33 @@ def _get_attention_functions() -> tuple[Callable, Callable, Callable, Callable]:
     global _index_first_axis, _pad_input, _rearrange, _unpad_input
 
     if is_cuda_available:
-        from flash_attn.bert_padding import index_first_axis, pad_input, rearrange, unpad_input
+        try:
+            from flash_attn.bert_padding import index_first_axis, pad_input, rearrange, unpad_input
+        except ImportError:
+            # Fallback to pure PyTorch implementations when flash_attn is not available
+            import torch
+            import einops
+
+            def index_first_axis(x, indices):
+                return x[indices]
+
+            def pad_input(hidden_states, indices, batch, seqlen):
+                """Pad hidden states back to original shape."""
+                output = torch.zeros(batch * seqlen, *hidden_states.shape[1:], 
+                                   dtype=hidden_states.dtype, device=hidden_states.device)
+                output[indices] = hidden_states
+                return output.reshape(batch, seqlen, *hidden_states.shape[1:])
+
+            def rearrange(x, pattern):
+                return einops.rearrange(x, pattern)
+
+            def unpad_input(hidden_states, attention_mask):
+                """Remove padding from hidden states."""
+                seqlen = hidden_states.shape[1]
+                indices = torch.nonzero(attention_mask.flatten(), as_tuple=False).flatten()
+                hidden_states = hidden_states.reshape(-1, *hidden_states.shape[2:])
+                return index_first_axis(hidden_states, indices), indices, seqlen
+
     elif is_npu_available:
         from verl.utils.npu_utils import index_first_axis, pad_input, rearrange, unpad_input
 

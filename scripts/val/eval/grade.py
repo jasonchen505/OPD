@@ -33,7 +33,7 @@ Here is your task. Simply reply with either CORRECT, INCORRECT, or INVALID. Don'
 Judging the correctness of the candidate's answer:
 """
 
-NAME     = "Qwen3-4B-Non-Thinking-RL-Math" 
+NAME     = "DeepSeek-R1-Distill-Qwen-1.5B-OPD-final" 
 EVAL_DIR = Path(f"justrl_eval_outputs/{NAME}")
 OUTPUT_FILE = EVAL_DIR / "grading_results.json"
 MODEL_NAME = "../../model/CompassVerifier-3B"
@@ -42,7 +42,7 @@ MODEL_NAME = "../../model/CompassVerifier-3B"
 vllm_model = None
 model_tokenizer = None
 sampling_params = None
-length_tokenizer = AutoTokenizer.from_pretrained("../../model/Qwen3-1.7B", local_files_only=True)
+length_tokenizer = AutoTokenizer.from_pretrained("/home/chenyizhou/OPD/model/Qwen3-1.7B-Base", local_files_only=True)
 
 def get_len(seq):
     if length_tokenizer:
