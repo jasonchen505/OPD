@@ -1,0 +1,158 @@
+% references_background.bib — Background, baseline, theory, framework papers
+% Cited from V3 main.tex but NOT OPD method papers
+% Contents:
+%   - Classical KD (Hinton 2015, Sequence-Level KD 2016)
+%   - Imitation learning theory (DAgger 2011)
+%   - Continual learning (EWC 2017)
+%   - Scaling laws (Kaplan 2020, Chinchilla 2022)
+%   - Benchmarks (HELM 2023)
+%   - KD critique (False Promise 2023)
+%   - Process reward models (Verify Step 2023)
+%   - Inference systems (vLLM 2023)
+%   - KD surveys (Xu 2024)
+%   - RLHF frameworks (OpenRLHF 2024, HybridFlow 2024)
+%   - Tech reports / blogs (TML blog, DeepSeek-V4, TensorRT-LLM)
+
+@inproceedings{1011.0686,
+  author    = {St{\'e}phane Ross and Geoffrey J. Gordon and J. Andrew Bagnell},
+  title     = {A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning},
+  booktitle = {Proceedings of the 14th International Conference on Artificial Intelligence and Statistics},
+  pages     = {627--635},
+  year      = {2011},
+  arxiv = {1011.0686},
+}
+
+@article{1503.02531,
+  author    = {Geoffrey Hinton and Oriol Vinyals and Jeff Dean},
+  title     = {Distilling the Knowledge in a Neural Network},
+  journal   = {arXiv preprint arXiv:1503.02531},
+  year      = {2015},
+}
+
+@inproceedings{1606.07947,
+  author    = {Yoon Kim and Alexander M. Rush},
+  title     = {Sequence-Level Knowledge Distillation},
+  booktitle = {Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {1317--1327},
+  year      = {2016},
+  arxiv = {1606.07947},
+}
+
+@article{1612.00796,
+  title={Overcoming catastrophic forgetting in neural networks},
+  author={Kirkpatrick, James and Pascanu, Razvan and Rabinowitz, Neil and Veness, Joel and Desjardins, Guillaume and Rusu, Andrei A and Milan, Kieran and Quan, John and Ramalho, Tiago and Grabska-Barwinska, Agnieszka and others},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={114},
+  number={13},
+  pages={3521--3526},
+  year={2017},
+  arxiv = {1612.00796},
+}
+
+@article{2001.08361,
+  title={Scaling Laws for Neural Language Models},
+  author={Kaplan, Jared and McCandlish, Sam and Henighan, Tom and Brown, Tom B and Chess, Benjamin and Child, Rewon and Gray, Scott and Radford, Alec and Wu, Jeffrey and Amodei, Dario},
+  journal={arXiv preprint arXiv:2001.08361},
+  year={2020}
+}
+
+@inproceedings{2203.15556,
+  author    = {Jordan Hoffmann and Sebastian Borgeaud and Arthur Mensch and Elena Buchatskaya and Trevor Cai and Eliza Rutherford and Diego de Las Casas and Lisa Anne Hendricks and Johannes Welbl and Aidan Clark and Tom Hennigan and Eric Noland and Katie Millican and George van den Driessche and Bogdan Damoc and Aurelia Guy and Simon Osindero and Karen Simonyan and Erich Elsen and Jack W. Rae and Oriol Vinyals and Laurent Sifre},
+  title     = {{Training Compute-Optimal Large Language Models}},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2022},
+  url       = {https://arxiv.org/abs/2203.15556},
+}
+
+@article{2211.09110,
+  author    = {Percy Liang and Rishi Bommasani and Tony Lee and Dimitris Tsipras and Dilara Soylu and Michihiro Yasunaga and Yian Zhang and Deepak Narayanan and Yuhuai Wu and Ananya Kumar and Benjamin Newman and Binhang Yuan and Bobby Yan and Ce Zhang and Christian Cosgrove and Christopher D. Manning and Christopher R{\'e} and Diana Acosta-Navas and Drew A. Hudson and Eric Zelikman and Esin Durmus and Faisal Ladhak and Frieda Rong and Hongyu Ren and Huaxiu Yao and Jue Wang and Keshav Santhanam and Laurel Orr and Lucia Zheng and Mert Yuksekgonul and Mirac Suzgun and Nathan Kim and Neel Guha and Niladri Chatterji and Omar Khattab and Peter Henderson and Qian Huang and Ryan Chi and Sang Michael Xie and Shibani Santurkar and Surya Ganguli and Tatsunori Hashimoto and Thomas Icard and Tianyi Zhang and Vishrav Chaudhary and William Wang and Xuechen Li and Yifan Mai and Yuhui Zhang and Yuta Koreeda},
+  title     = {Holistic Evaluation of Language Models},
+  journal   = {Transactions on Machine Learning Research},
+  year      = {2023},
+  arxiv     = {2211.09110},
+}
+
+@article{2305.15717,
+  author    = {Arnav Gudibande and Eric Wallace and Charlie Snell and Xinyang Geng and Hao Liu and Pieter Abbeel and Sergey Levine and Dawn Song},
+  title     = {{The False Promise of Imitating Proprietary LLMs}},
+  journal   = {arXiv preprint arXiv:2305.15717},
+  year      = {2023},
+  url       = {https://arxiv.org/abs/2305.15717},
+}
+
+@article{2305.20050,
+  author    = {Hunter Lightman and Vineet Kosaraju and Yura Burda and Harri Edwards and Bowen Baker and Teddy Lee and Jan Leike and John Schulman and Ilya Sutskever and Karl Cobbe},
+  title     = {{Let's Verify Step by Step}},
+  journal   = {Proceedings of ICLR},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2305.20050},
+}
+
+@article{2305.02301,
+  author    = {Cheng-Yu Hsieh and Chun-Liang Li and Chih-Kuan Yeh and Hootan Nakhost and Yasuhisa Fujii and Alexander Ratner and Ranjay Krishna and Chen-Yu Lee and Tomas Pfister},
+  title     = {{Distilling Step-by-Step! Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes}},
+  journal   = {Findings of ACL},
+  year      = {2023},
+  url       = {https://arxiv.org/abs/2305.02301},
+}
+
+@inproceedings{2309.06180,
+  title={Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
+  author={Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan and Sheng, Ying and Zheng, Lianmin and Yu, Cody Hao and Gonzalez, Joseph and Zhang, Hao and Stoica, Ion},
+  booktitle={Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles (SOSP)},
+  year={2023},
+  arxiv = {2309.06180},
+}
+
+@article{2402.13116,
+  author    = {Xiaohan Xu and Ming Li and Chongyang Tao and Tao Shen and Reynold Cheng and Jinyang Li and Can Xu and Dacheng Tao and Tianyi Zhou},
+  title     = {{A Survey on Knowledge Distillation of Large Language Models}},
+  journal   = {arXiv preprint arXiv:2402.13116},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2402.13116},
+}
+
+@article{2405.11143,
+  title={{OpenRLHF}: An Easy-to-use, Scalable and High-performance {RLHF} Framework},
+  author={Hu, Jian and Tao, Xibin and Hou, Weixun and Liu, Quanzhi and Feng, Zhengyu and Xu, Yang and Ye, Qing and Li, Qi and Li, Zenan and Zhang, Shuai},
+  journal={arXiv preprint arXiv:2405.11143},
+  year={2024}
+}
+
+@article{2408.00118,
+  author    = {{Gemma Team} and Morgane Riviere and Shreya Pathak and Pier Giuseppe Sessa and Cassidy Hardin and Surya Bhupatiraju and L{\'e}onard Hussenot and Thomas Mesnard and Bobak Shahriari and Alexandre Ram{\'e} and Johan Ferret and Peter Liu and Pouya Tafti and Abe Friesen and Michelle Casbon and Sabela Ramos and Ravin Kumar and Charline Le Lan and Sammy Jerome and Anton Tsitsulin and Nino Vieillard and Piotr Stanczyk and Sertan Girgin and Nikola Momchev and Matt Hoffman and Shantanu Thakoor and Jean-Bastien Grill and Behnam Neyshabur and Olivier Bachem and Alanna Walton and Aliaksei Severyn and Alicia Parrish and Aliya Ahmad and Allen Hutchison and Alvin Abdagic and Amanda Carl and Amy Shen and Andy Brock and Andy Coenen and Anthony Laforge and Antonia Paterson and Ben Bastian and Bilal Piot and Bo Wu and Brandon Royal and Charlie Chen and Chintu Kumar and Chris Perry and Chris Welty and Christopher A. Choquette-Choo and Danila Sinopalnikov and David Weinberger and Dimple Vijaykumar and Dominika Rogozi{\'n}ska and Dustin Herbison and Elisa Bandy and Emma Wang and Eric Noland and Erica Moreira and Evan Senter and Evgenii Eltyshev and Francesco Visin and Gabriel Rasskin and Gary Wei and Glenn Cameron and Gus Martins and Hadi Hashemi and Hanna Klimczak-Pluci{\'n}ska and Harleen Batra and Harsh Dhand and Ivan Nardini and Jacinda Mein and Jack Zhou and James Svensson and Jeff Stanway and Jetha Chan and Jin Peng Zhou and Joana Carrasqueira and Joana Iljazi and Jocelyn Becker and Joe Fernandez and Joost van Amersfoort and Josh Gordon and Josh Lipschultz and Josh Newlan and Ju-yeong Ji and Kareem Mohamed and Kartikeya Badola and Kat Black and Katie Millican and Keelin McDonell and Kelvin Nguyen and Kiranbir Sodhia and Kish Greene and Lars Lowe Sjoesund and Lauren Usui and Laurent Sifre and Lena Heuermann and Leticia Lago and Lilly McNealus and Livio Baldini Soares and Logan Kilpatrick and Lucas Dixon and Luciano Martins and Machel Reid and Manvinder Singh and Mark Iverson and Martin G{\"o}rner and Mat Velloso and Mateo Wirth and Matt Davidow and Matt Miller and Matthew Rahtz and Matthew Watson and Meg Risdal and Mehran Kazemi and Michael Moynihan and Ming Zhang and Minsuk Kahng and Minwoo Park and Mofi Rahman and Mohit Khatwani and Natalie Dao and Nenshad Bardoliwalla and Nesh Devanathan and Neta Dumai and Nilay Chauhan and Oscar Wahltinez and Pankil Botarda and Parker Barnes and Paul Barham and Paul Michel and Pengchong Jin and Petko Georgiev and Phil Culliton and Pradeep Kuppala and Ramona Comanescu and Ramona Merhej and Reena Jana and Reza Ardeshir Rokni and Rishabh Agarwal and Ryan Mullins and Samaneh Saadat and Sara Mc Carthy and Sarah Cogan and Sarah Perrin and S{\'e}bastien M. R. Arnold and Sebastian Krause and Shengyang Dai and Shruti Garg and Shruti Sheth and Sue Ronstrom and Susan Chan and Timothy Jordan and Ting Yu and Tom Eccles and Tom Hennigan and Tomas Kocisky and Tulsee Doshi and Vihan Jain and Vikas Yadav and Vilobh Meshram and Vishal Dharmadhikari and Warren Barkley and Wei Wei and Wenming Ye and Woohyun Han and Woosuk Kwon and Xiang Xu and Zhe Shen and Zhitao Gong and Zichuan Wei and Victor Cotruta and Phoebe Kirk and Anand Rao and Minh Giang and Ludovic Peran and Tris Warkentin and Eli Collins and Joelle Barral and Zoubin Ghahramani and Raia Hadsell and D. Sculley and Jeanine Banks and Anca Dragan and Slav Petrov and Oriol Vinyals and Jeff Dean and Demis Hassabis and Koray Kavukcuoglu and Clement Farabet and Elena Buchatskaya and Sebastian Borgeaud and Noah Fiedel and Armand Joulin and Kathleen Kenealy and Robert Dadashi and Alek Andreev},
+  title     = {{Gemma 2: Improving Open Language Models at a Practical Size}},
+  journal   = {arXiv preprint arXiv:2408.00118},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2408.00118},
+}
+
+@article{2409.19256,
+  title={{HybridFlow}: A Flexible and Efficient {RLHF} Framework},
+  author={Sheng, Guangming and Cao, Chi and Gao, Zilingfeng and others},
+  journal={arXiv preprint arXiv:2409.19256},
+  year={2024}
+}
+
+@article{2501.12948,
+  author    = {{DeepSeek-AI} and Daya Guo and Dejian Yang and Haowei Zhang and Junxiao Song and Peiyi Wang and Qihao Zhu and Runxin Xu and Ruoyu Zhang and Shirong Ma and Xiao Bi and Xiaokang Zhang and Xingkai Yu and Yu Wu and Z. F. Wu and Zhibin Gou and Zhihong Shao and Zhuoshu Li and Ziyi Gao and Aixin Liu and Bing Xue and Bingxuan Wang and Bochao Wu and Bei Feng and Chengda Lu and Chenggang Zhao and Chengqi Deng and Chenyu Zhang and Chong Ruan and Damai Dai and Deli Chen and Dongjie Ji and Erhang Li and Fangyun Lin and Fucong Dai and Fuli Luo and Guangbo Hao and Guanting Chen and Guowei Li and H. Zhang and Han Bao and Hanwei Xu and Haocheng Wang and Honghui Ding and Huajian Xin and Huazuo Gao and Hui Qu and Hui Li and Jianzhong Guo and Jiashi Li and Jiawei Wang and Jingchang Chen and Jingyang Yuan and Junjie Qiu and Junlong Li and J. L. Cai and Jiaqi Ni and Jian Liang and Jin Chen and Kai Dong and Kai Hu and Kaige Gao and Kang Guan and Kexin Huang and Kuai Yu and Lean Wang and Lecong Zhang and Liang Zhao and Litong Wang and Liyue Zhang and Lei Xu and Leyi Xia and Mingchuan Zhang and Minghua Zhang and Minghui Tang and Meng Li and Miaojun Wang and Mingming Li and Ning Tian and Panpan Huang and Peng Zhang and Qiancheng Wang and Qinyu Chen and Qiushi Du and Ruiqi Ge and Ruisong Zhang and Ruizhe Pan and Runji Wang and R. J. Chen and R. L. Jin and Ruyi Chen and Shanghao Lu and Shangyan Zhou and Shanhuang Chen and Shengfeng Ye and Shiyu Wang and Shuiping Yu and Shunfeng Zhou and Shuting Pan and S. S. Li and Shuang Zhou and Shaoqing Wu and Shengfeng Ye and Tao Yun and Tian Pei and Tianyu Sun and T. Wang and Wangding Zeng and Wanjia Zhao and Wen Liu and Wenfeng Liang and Wenjun Gao and Wenqin Yu and Wentao Zhang and W. L. Xiao and Wei An and Xiaodong Liu and Xiaohan Wang and Xiaokang Chen and Xiaotao Nie and Xin Cheng and Xin Liu and Xin Xie and Xingchao Liu and Xinyu Yang and Xinyuan Li and Xuecheng Su and Xuheng Lin and X. Q. Li and Xiangyue Jin and Xiaojin Shen and Xiaosha Chen and Xiaowen Sun and Xiaoxiang Wang and Xinnan Song and Xinyi Zhou and Xianzu Wang and Xinxia Shan and Y. K. Li and Y. Q. Wang and Y. X. Wei and Yang Zhang and Yanhong Xu and Yao Li and Yao Zhao and Yaofeng Sun and Yaohui Wang and Yi Yu and Yichao Zhang and Yifan Shi and Yiliang Xiong and Ying He and Yishi Piao and Yisong Wang and Yixuan Tan and Yiyang Ma and Yiyuan Liu and Yongqiang Guo and Yuan Ou and Yuduan Wang and Yue Gong and Yuheng Zou and Yujia He and Yunfan Xiong and Yuxiang Luo and Yuxiang You and Yuxuan Liu and Yuyang Zhou and Y. X. Zhu and Yanhong Xu and Yanping Huang and Yaohui Li and Yi Zheng and Yuchen Zhu and Yunxian Ma and Ying Tang and Yukun Zha and Yuting Yan and Z. Z. Ren and Zehui Ren and Zhangli Sha and Zhe Fu and Zhean Xu and Zhenda Xie and Zhengyan Zhang and Zhewen Hao and Zhicheng Ma and Zhigang Yan and Zhiyu Wu and Zihui Gu and Zijia Zhu and Zijun Liu and Zilin Li and Ziwei Xie and Ziyang Song and Zizheng Pan and Zhen Huang and Zhipeng Xu and Zhongyu Zhang and Zhen Zhang},
+  title     = {{DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}},
+  journal   = {arXiv preprint arXiv:2501.12948},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2501.12948},
+}
+
+@inproceedings{2502.08606,
+  author    = {Dan Busbridge and Amitis Shidani and Floris Weers and Jason Ramapuram and Etai Littwin and Russ Webb},
+  title     = {{Distillation Scaling Laws}},
+  booktitle = {Proceedings of the International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2502.08606},
+}
+
+@misc{nvidia2024tensorrtllm,
+  title={{TensorRT-LLM}: High-Performance Inference Framework for Large Language Models},
+  author={{NVIDIA}},
+  year={2024},
+  howpublished={\url{https://github.com/NVIDIA/TensorRT-LLM}}
+}

@@ -1,0 +1,161 @@
+\section{Introduction}
+
+On-policy distillation (OPD) has rapidly emerged as a core technique for large language model (LLM) post-training.
+Recent industry efforts, including Qwen3~\citep{yang2025qwen3}, MiMo~\citep{xiao2026mimo} and GLM-5~\citep{zeng2026glm}, all adopt OPD in their post-training pipelines and report substantial gains, establishing it as a competitive complement to conventional supervised fine-tuning (SFT) and outcome-reward reinforcement learning (RL).
+Thinking Machines Lab~\citep{lu2025onpolicydistillation} replicates the Qwen3 OPD recipe at a fraction of the RL compute cost, independently confirming that on-policy, dense supervision is a practically efficient alternative.
+
+Unlike off-policy distillation, which trains the student on fixed teacher-generated sequences and suffers from exposure bias~\citep{bengio2015scheduled}, OPD has the student generate its own rollouts and leverages the teacher's per-token log-probabilities as a dense reward signal to refine behavior on states the student actually visits.
+Recently, this has been extended to self-distillation settings where a single model serves as its own teacher given privileged information, demonstrating that the framework can drive continual self-improvement~\citep{hubotter2026reinforcement,zhao2026self,shenfeld2026self}.
+
+However, despite these successes, OPD remains poorly understood and fragile in practice.
+We observe a striking failure mode: a stronger teacher can completely fail to improve a student, even when a weaker teacher succeeds from lower initial alignment.
+Yet few studies have investigated why the teacher's token-level signal steers the student distribution in the desired direction, or the conditions under which it fails.
+
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=black!25,          %
+  boxrule=0.5pt,
+  arc=2.5mm,                  %
+  left=3mm, right=3mm,
+  top=2.5mm, bottom=3mm,
+]
+\begin{center}
+\small\textbf{\faBookOpen\hspace{0.4em}Paper Overview}
+\end{center}
+\vspace{-1mm}
+\noindent
+\begin{minipage}[c]{0.285\linewidth}
+\parbox[t][1em][c]{\linewidth}{%
+  \centering\scriptsize\color{gray}%
+  \textit{When does OPD succeed or fail?}}
+\begin{tcolorbox}[
+  enhanced,
+  colback=phenobg,
+  colframe=phenoframe,
+  fonttitle=\bfseries\footnotesize,
+  title={\faChartLine\hspace{0.2em}~~Phenomenology (\S\ref{sec:phenomenology})},
+  coltitle=white,
+  colbacktitle=phenoframe,
+  toptitle=1.3mm, bottomtitle=1.3mm,
+  boxrule=0.4pt,
+  arc=1.5mm,
+  top=1.5mm, bottom=1.5mm, left=1.5mm, right=1.5mm,
+  fontupper=\scriptsize,
+  equal height group=overviewpillar,
+]
+Two empirical patterns distinguish effective OPD:\\[2pt]
+{\scriptsize\color{black!70}%
+\textbullet~Thinking-pattern consistency\\
+\textbullet~Higher scores $\neq$ new knowledge}
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+{\color{black!30}\raisebox{-2.5mm}{\large$\boldsymbol{\Rightarrow}$}}%
+\hfill
+\begin{minipage}[c]{0.285\linewidth}
+\parbox[t][1em][c]{\linewidth}{%
+  \centering\scriptsize\color{gray}%
+  \textit{Why does OPD work at token level?}}
+\begin{tcolorbox}[
+  enhanced,
+  colback=mechbg,
+  colframe=mechframe,
+  fonttitle=\bfseries\footnotesize,
+  title={\faCogs\hspace{0.2em}~~Mechanism (\S\ref{sec:mechanism})},
+  coltitle=white,
+  colbacktitle=mechframe,
+  toptitle=1.3mm, bottomtitle=1.3mm,
+  boxrule=0.4pt,
+  arc=1.5mm,
+  top=1.5mm, bottom=1.5mm, left=1.5mm, right=1.5mm,
+  fontupper=\scriptsize,
+  equal height group=overviewpillar,
+]
+Progressive alignment on high-prob tokens governs OPD.\\[2pt]
+{\scriptsize\color{black!70}%
+\textbullet~Overlap tokens grow steadily\\
+\textbullet~Overlap tokens alone suffice}
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+{\color{black!30}\raisebox{-2.5mm}{\large$\boldsymbol{\Rightarrow}$}}%
+\hfill
+\begin{minipage}[c]{0.285\linewidth}
+\parbox[t][1em][c]{\linewidth}{%
+  \centering\scriptsize\color{gray}%
+  \textit{How to rescue failing OPD?}}
+\begin{tcolorbox}[
+  enhanced,
+  colback=recipebg,
+  colframe=recipeframe,
+  fonttitle=\bfseries\footnotesize,
+  title={\faFlask\hspace{0.2em}~~Recipe (\S\ref{sec:recipe})},
+  coltitle=white,
+  colbacktitle=recipeframe,
+  toptitle=1.3mm, bottomtitle=1.3mm,
+  boxrule=0.4pt,
+  arc=1.5mm,
+  top=1.5mm, bottom=1.5mm, left=1.5mm, right=1.5mm,
+  fontupper=\scriptsize,
+  equal height group=overviewpillar,
+]
+Two strategies bridge the thinking-pattern gap:\\[2pt]
+{\scriptsize\color{black!70}%
+\textbullet~Off-policy cold start\\
+\textbullet~Teacher-aligned prompts}
+\end{tcolorbox}
+\end{minipage}
+\end{tcolorbox}
+\vspace{2pt}
+
+
+We present a systematic study of OPD training dynamics, progressing from empirical conditions through token-level mechanism to practical recipe.
+
+\textbf{Phenomenology (\S\ref{sec:phenomenology}).}
+We investigate the empirical patterns that distinguish effective from ineffective OPD, and identify two governing factors.
+\emph{(i)~Thinking-pattern consistency}: the student and teacher should share consistent thinking patterns (e.g. higher overlap ratio in their top-$k$ token distributions). Even when the teacher achieves higher benchmark scores, mismatched thinking patterns produce low initial overlap that training cannot fully recover.
+\emph{(ii)~Higher scores $\neq$ new knowledge}: even with consistent thinking patterns and higher benchmark scores, the teacher should offer knowledge that the student has not already acquired.
+When both models are trained on the same data and recipe, they converge to similar distributions at their respective scales, leaving the teacher with little transferable signal.
+Only when the teacher carries knowledge beyond what the student has already seen can OPD yield substantial gains.
+We validate both conditions through reverse distillation experiments, which further reveal that OPD fundamentally learns thinking patterns rather than merely benefiting from pattern consistency, and that training dynamics can be entirely decoupled from benchmark scores.
+
+\textbf{Mechanism (\S\ref{sec:mechanism}).}
+We then investigate the token-level mechanism based on these conditions.
+Across all settings studied, effective OPD exhibits a consistent signature where the student and teacher distributions become progressively more similar on student-visited states.
+The high-probability tokens increasingly coincide (overlap ratio rising from 72\% to 91\%), the entropy gap between the two distributions narrows, and the shared top-$k$ tokens concentrate 97--99\% of the combined probability mass.
+By contrast, failing runs show stagnant overlap and persistent entropy mismatch from the outset.
+We further show that restricting supervision to overlap tokens alone matches full top-$k$ performance, confirming that the overlap set is the principal locus of OPD's gradient signal.
+
+\textbf{Recipe (\S\ref{sec:recipe}).}
+Guided by the phenomenological analysis, we propose two complementary strategies that recover OPD in otherwise failing configurations:
+\emph{(i)~off-policy cold start}, a warmup SFT phase on teacher-generated rollouts before OPD that bridges the thinking-pattern gap by raising initial overlap ratio;
+\emph{(ii)~teacher-aligned prompt selection}, which uses prompts drawn from the teacher's post-training data to sharpen alignment on high-probability tokens, though at the cost of substantially lower student entropy that necessitates mixing with out-of-distribution prompts.
+In both cases, the recovered runs exhibit the same dynamic signature as naturally successful ones as shown in \S\ref{sec:mechanism}: steadily rising overlap ratio, improving token-level advantage, and a narrowing entropy gap.
+
+Finally, we examine the cost of OPD's dense supervision (\S\ref{sec:discussion}).
+We show that reward quality degrades systematically with trajectory depth and that instability originates at later tokens before propagating backward through the trajectory.
+Surprisingly, even failing teachers provide reward that is globally correlated with rollout correctness, suggesting that the failure is not one of signal quality but of local optimization geometry. A larger teacher may induce a reward landscape that is locally flat around the student's policy, making token-level gradients ineffective despite an informative global signal.
+These findings reveal a fundamental tension between supervision density and supervision reliability, and point to the limitations of current OPD for long-horizon reasoning and agentic settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

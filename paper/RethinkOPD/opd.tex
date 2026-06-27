@@ -1,0 +1,202 @@
+\documentclass[11pt, a4paper]{thuc3i}
+\usepackage[sort&compress]{natbib}
+\bibliographystyle{plainnat}
+
+\setheadertext{Rethinking On-Policy Distillation}
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\usepackage{url}            %
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{array,ragged2e,booktabs}
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\usepackage{longtable}
+\usepackage{amsfonts}       %
+\usepackage{amsthm}         %
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{proposition}{Proposition}
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+\usepackage{xcolor}         %
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\usepackage{xurl}
+
+\usepackage{soul}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{changes}
+\usepackage{mathtools}
+\usepackage{pifont}
+\usepackage{tocloft}
+
+\usepackage{colortbl}
+\usepackage{wrapfig}
+\usepackage{xspace}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\usepackage{listings}
+\usepackage{fontawesome5}
+
+\usepackage{caption}
+
+\usepackage{afterpage}
+\usepackage{float}
+\usepackage[edges]{forest}
+\usepackage[normalem]{ulem}
+\usepackage{bbding}
+\usepackage[most,skins,theorems]{tcolorbox}
+\usepackage{epigraph}
+
+\usepackage[tikz]{bclogo}
+\usepackage[framemethod=tikz]{mdframed}
+
+
+\definecolor{lightorange}{HTML}{faa755}
+\definecolor{lightblue}{RGB}{220,235,250}
+\tcbset{
+  takeawaysbox/.style={
+    title=Takeaways,
+    colback=lightblue!80,
+    colframe=black,
+    fonttitle=\bfseries\small,
+    coltitle=white,
+    colbacktitle=black,
+    enhanced,
+    attach boxed title to top left={xshift=2.5mm,yshift=-2.5mm},
+    boxed title style={rounded corners, size=small, colframe=black, colback=black},
+    width=\linewidth,
+    arc=3.5mm
+  }
+}
+\tcbset{
+  taskbox/.style={
+    title=Task Definition,
+    colback=lightblue!80,
+    colframe=black,
+    fonttitle=\bfseries\small,
+    coltitle=white,
+    colbacktitle=black,
+    enhanced,
+    attach boxed title to top left={xshift=2.5mm,yshift=-2.5mm},
+    boxed title style={rounded corners, size=small, colframe=black, colback=black},
+    width=\linewidth,
+    arc=2mm
+  }
+}
+\definecolor{overviewbg}{HTML}{FFF3E0}
+\definecolor{overviewframe}{HTML}{E65100}
+\tcbset{
+  overviewbox/.style={
+    title=Overview,
+    colback=overviewbg,
+    colframe=overviewframe,
+    fonttitle=\bfseries\small,
+    coltitle=white,
+    colbacktitle=overviewframe,
+    enhanced,
+    attach boxed title to top left={xshift=2.5mm,yshift=-2.5mm},
+    boxed title style={rounded corners, size=small, colframe=overviewframe, colback=overviewframe},
+    width=\linewidth,
+    arc=3.5mm
+  }
+}
+
+\definecolor{phenobg}{HTML}{EBF5FB}
+\definecolor{phenoframe}{HTML}{2980B9}
+\definecolor{mechbg}{HTML}{FEF5E7}
+\definecolor{mechframe}{HTML}{E67E22}
+\definecolor{recipebg}{HTML}{D5F5E3}
+\definecolor{recipeframe}{HTML}{1E8449}
+\definecolor{overviewdark}{HTML}{2C3E50}
+
+\usepackage{cleveref}
+
+\newcommand{\greencheck}{{\color{Green}\CheckmarkBold}}
+\newcommand{\redcross}{{\color{Red}\XSolidBrush}}
+\renewcommand{\today}{2026-04-15}
+
+\usepackage[dvipsnames]{xcolor}
+
+
+\title{Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe}
+
+
+
+\author{%
+    Yaxuan Li$^{*1,2}$,
+    Yuxin Zuo$^{*\dagger1}$,
+    Bingxiang He$^{*\dagger1}$,
+    Jinqian Zhang$^{1}$,
+    Chaojun Xiao$^{\ddagger1}$,
+    Cheng Qian$^{3}$,
+    Tianyu Yu$^{1}$,
+    Huan-ang Gao$^{1}$,
+    Wenkai Yang$^{4}$,
+    Zhiyuan Liu$^{\ddagger1}$,
+    Ning Ding$^{\ddagger1}$\\
+    $^{1}$Tsinghua University \quad
+    $^{2}$ShanghaiTech University \quad
+    $^{3}$University of Illinois Urbana-Champaign \quad
+    $^{4}$Renmin University of China
+    \vskip -1mm
+    \textbf{$^*$Equal Contribution.} \quad 
+    \textbf{$^\dagger$Project Lead.} \quad \textbf{$^\ddagger$Corresponding Authors.}
+    \vskip -1mm
+    \faGithub~{\fontfamily{ppl}\selectfont \textbf{Code:}}~\url{https://github.com/thunlp/OPD}. \\
+    \vskip 1mm
+    \faEnvelope[regular] \texttt{hebx24@mails.tsinghua.edu.cn, \{xcj,liuzy,dingning\}@tsinghua.edu.cn}
+}
+
+\input{Sections/0_Abstract}
+
+
+\pretitlefigure{%
+    \begin{center}
+        \includegraphics[width=\linewidth]{Figures/opd_teaser.pdf}
+        \captionof{figure}{Overview of our paper.
+        JustRL-1.5B is obtained by applying RL to DeepSeek-Distill-1.5B~(DS-1.5B), and Skywork-OR1-Math-7B~(SW-7B) by applying RL to DeepSeek-Distill-7B~(DS-7B).
+        }
+        \label{fig:teaser}
+    \end{center}
+    \vskip4pt
+}
+
+\begin{document}
+
+\maketitle
+
+
+\input{Sections/1_Introduction}
+\input{Sections/2_Preliminaries}
+\input{Sections/3_Exp}
+\input{Sections/4_Exp}
+\input{Sections/5_Exp}
+\input{Sections/6_Discussion}
+\input{Sections/7_Related_Works}
+\input{Sections/8_Conclusion}
+\input{Sections/Others}
+
+\bibliography{opd}
+
+\newpage
+
+\input{Sections/Appendix}
+
+
+
+
+
+
+\end{document}

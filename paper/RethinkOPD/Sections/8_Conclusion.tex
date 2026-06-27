@@ -1,0 +1,18 @@
+\section{Conclusion and Future Work}
+
+This work provides a systematic analysis of OPD, decomposing its success into two governing conditions: thinking-pattern consistency and the presence of genuinely new knowledge beyond what the student has seen during training.
+When these conditions are unmet, off-policy cold start and teacher-aligned prompt selection provide effective remedies.
+We also reveal a practical ceiling imposed by reward degradation over long trajectories.
+
+
+
+\textbf{Future Work} \quad Building on our findings, we identify several directions for future research:
+\begin{itemize}[leftmargin=12pt]
+    \item \textbf{Beyond Mathematical Reasoning:} All experiments in this work are conducted on mathematical benchmarks. Whether the same conditions and token-level mechanisms govern OPD in other domains such as code and open-ended settings remains an important open question.
+    \item \textbf{Impact of Pre-Training:} The “new knowledge” condition implicitly depends on differences in pre-training corpora, but isolating this factor is challenging. Current studies mainly rely on cross-family distillation (e.g., Qwen → LLaMA), which confounds data divergence with tokenizer mismatch and architectural differences, while controlled pre-training ablations remain prohibitively expensive. As a result, measuring the effect of pre-training data on OPD remains an open problem.
+    \item \textbf{Self-Distillation Dynamics:} Recent work increasingly adopts self-distillation, where a single model serves as its own teacher given privileged information.
+    Extending these insights to the self-distillation regime, where thinking-pattern consistency is guaranteed but knowledge novelty arises from privileged access rather than a separate teacher, is a natural next step.
+    \item \textbf{Long-Horizon and Agentic Settings:} The trajectory-length ceiling revealed in \Cref{sec:discussion} motivates hybrid approaches that combine dense token-level supervision on short segments with sparse outcome-level rewards for longer horizons, as well as curriculum strategies that progressively extend the supervised horizon during training.
+\end{itemize}
+
+

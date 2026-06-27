@@ -1,0 +1,35 @@
+\section{Related Work}
+
+\paragraph{Knowledge Distillation.}
+Knowledge distillation (KD)~\citep{hinton2015distilling} transfers knowledge from a large model to a smaller one by training a student network on the soft output distributions of a teacher.
+For autoregressive sequence models,~\citet{kim2016sequence} extended this to sequence-level distillation by training students on teacher-generated outputs, establishing the dominant off-policy distillation baseline~\citep{sanh2019distilbert,jiao2020tinybert,wang2020minilm}.
+In parallel, supervised fine-tuning (SFT) has been directly applied to improve performance on a variety of downstream tasks~\citep{JMLR:v25:23-0870,sanh2021multitask,wei2021finetuned}.
+A fundamental limitation shared by all off-policy approaches is the train-inference distribution mismatch. The student is optimized on teacher-generated or reference sequences, but must generate from its own distribution at inference, which is an instance of the exposure bias~\citep{bengio2015scheduled} that accumulates errors over long generations.
+This mismatch motivates shifting distillation to the student's own on-policy distribution, which is the central idea behind on-policy distillation.
+
+
+\paragraph{On-Policy Distillation.}
+MiniLLM~\citep{gu2023minillm} first formalized on-policy distillation (OPD) for LLMs under a reverse KL objective optimized via policy gradient, arguing that reverse KL's mode-seeking behavior prevents the student from spreading probability mass over regions the teacher considers unlikely.
+GKD~\citep{agarwal2024policy} introduced a unified framework interpolating between on-policy and off-policy data across multiple divergences, demonstrating consistent gains over other KD baselines.
+\citet{yang2026learning} later formalized OPD theoretically as a special case of dense KL-constrained RL, showing that the teacher's per-token log-ratio constitutes an implicit reward and that scaling this reward beyond its standard weight can push the student past the teacher's performance boundary.
+OPD has since been adopted in industry post-training pipelines~\citep{yang2025qwen3,lu2025onpolicydistillation,zeng2026glm,xiao2026mimo,ko2026scaling,jin2026entropy,jang2026stable, fu2026revisiting,yang2026learning}, and extended to scalable self-distillation~\citep{hubotter2026reinforcement,zhao2026self,he2026far,shenfeld2026self,ye2026policy,sang2026crispcompressedreasoningiterative,kim2026does,ye2026online,yang2026self,li2026unifying,zhao2026selfdistillationmultitokenprediction,ding2026hdpo}, where a single model acts as its own teacher by conditioning on privileged information such as ground-truth solutions or execution feedback.
+Despite this growing body of work, existing studies focus on demonstrating OPD's promise, such as dense rewards and mitigated exposure bias, across varied objectives, tasks, and teacher-student pairs, without systematically analyzing when or why OPD fails.
+
+
+\paragraph{Capacity Gap and Distillability.}
+A recurring observation in knowledge distillation is that large teacher-student capacity gaps can degrade or even reverse the benefit of distillation.
+\citet{cho2019efficacy} demonstrate that distillation can hurt student performance when the teacher is substantially more capable, and~\citet{mirzadeh2020improved} propose an intermediate-sized teacher assistant to bridge the gap.
+\citet{busbridge2025distillation} provide a quantitative treatment via distillation scaling laws, showing that student loss follows a power law as a function of teacher quality, student size, and data volume, identifying a U-shaped capacity regime where teacher over-capability degrades distillation efficiency.
+For LLM reasoning,~\citet{li2025small} document a ``learnability gap'' showing that training small models on long chain-of-thought traces from strong reasoning teachers consistently underperforms simpler approaches, suggesting that the reasoning complexity of teacher outputs must be matched to student capacity.
+These findings call for caution regarding the universality of distillation. However, the existing analyses have largely centered on off-policy knowledge distillation. In particular, the issues of capacity gap and distillability in OPD remain underexplored.
+
+
+
+
+
+
+
+
+
+
+

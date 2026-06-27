@@ -1,0 +1,207 @@
+\newpage
+\appendix
+
+\section{Related Work}
+
+\paragraph{On-Policy Distillation.}
+Knowledge distillation  transfers knowledge from a teacher to a student by matching soft output distributions~\cite{hinton2015distilling,hsieh2023distilling,chen2025unveiling}.
+For autoregressive language models, on-policy distillation trains the student on its own samples rather than on teacher-generated data, eliminating the train--test distribution mismatch of offline methods \citep{gu2024minillm, agarwal2024gkd}.
+OPD has since been adopted at scale: Qwen3 \citep{qwen3} and GLM-5 \citep{glm5} use it to transfer reasoning capabilities, Nemotron-Cascade~2 \citep{nemotron2} combines it with cascade RL, and DeepSeek-V4 \citep{deepseekv4} integrates it into post-training.
+\citet{song2026survey} survey the rapidly expanding landscape.
+
+\paragraph{Training Stability in OPD.}
+A growing body of work addresses OPD instability while retaining the log-ratio reward.
+At the reward level, \citet{jin2026entropy} downweight uncertain tokens by teacher entropy, \citet{xu2026tip} assign importance weights based on reward reliability, and \citet{oh2026kl} introduce control variate baselines to reduce reward variance.
+At the structural level, \citet{jang2026stable} adaptively reformulate the teacher target, \citet{jia2026asymmetric} apply asymmetric treatment across token positions, and \citet{hou2026uniopd} unify multiple distillation perspectives with stabilizing constraints.
+Empirical analyses by \citet{fu2026revisiting}, \citet{luo2026demystifying}, and \citet{li2026rethinking} characterize common failure modes such as reward spikes and length inflation.
+\citet{ko2026reopold} formalize OPD as a policy gradient problem and propose relaxed objectives.
+All of these approaches modify how the log-ratio reward is weighted, normalized, or combined, but none question whether the log ratio is the right reward function.
+Our work departs from this line by redesigning the reward itself, replacing the unbounded log transformation with bounded power functions derived from the Box-Cox family \citep{boxcox1964}.
+
+\section{FLOPs Estimation}
+\label{app:flops}
+
+We estimate the distillation-update FLOPs for the Qwen3-0.6B-Base student and Qwen3-4B teacher setting. We use batch size \(B=32\), average prompt length \(128\), rollout length \(T=1024\), and total prefill length \(S=1152\). Let \(d\) be the hidden size, \(L\) the number of transformer layers, \(m\) the intermediate size, \(V\) the vocabulary size, and \(d_{\mathrm{kv}}=n_{\mathrm{kv}}d_h\) the total key/value projection dimension under GQA. For one prefill forward pass, we estimate the transformer FLOPs as
+\[
+\begin{aligned}
+F_{\mathrm{tr}}(d,L,m,d_{\mathrm{kv}},S)
+= BL \Big(
+&4Sd^2 + 4Sdd_{\mathrm{kv}} \\
+&+ 2S^2d + 6Sdm
+\Big).
+\end{aligned}
+\]
+The four terms correspond to the query/output projections, key/value projections, causal attention matrix multiplications, and SwiGLU MLP projections, respectively. We count multiply-add as two FLOPs. For Qwen3-4B, this gives
+\[
+F_{\mathrm{tr}}^{T} \approx 254.8\ \mathrm{TFLOPs},
+\]
+and for Qwen3-0.6B-Base,
+\[
+F_{\mathrm{tr}}^{S} \approx 30.6\ \mathrm{TFLOPs}.
+\]
+The teacher is used only for scoring, so we count one forward pass. The student is updated by backpropagation, so we approximate the student update as one forward pass plus backward pass, i.e., \(3F_{\mathrm{tr}}^{S}\). Thus, vanilla OPD methods such as PowerOPD require
+\[
+\begin{aligned}
+F_{\mathrm{sampled}}
+&= F_{\mathrm{tr}}^{T} + 3F_{\mathrm{tr}}^{S} \\
+&\approx 254.8 + 3\times 30.6 \\
+&= 346.6\ \mathrm{TFLOPs}.
+\end{aligned}
+\]
+per distillation update. The sampled-token reward only requires the probabilities of the sampled rollout tokens; the corresponding selective output projection is \(O(BTd)\) and is negligible compared with transformer compute.
+
+Full-vocabulary KL OPD additionally materializes vocabulary-sized distributions over all rollout positions. The teacher requires a full-vocabulary LM-head projection,
+\[
+F_{\mathrm{head}}^{T}
+=
+2BTd_TV
+\approx
+25.5\ \mathrm{TFLOPs},
+\]
+while the student full-vocabulary projection participates in backpropagation:
+\[
+F_{\mathrm{head}}^{S,\mathrm{train}}
+=
+3\cdot 2BTd_SV
+\approx
+30.6\ \mathrm{TFLOPs}.
+\]
+The KL term is computed over the full vocabulary,
+\[
+\begin{aligned}
+D_{\mathrm{KL}}(\pi_\theta \| \pi_T)
+=
+\sum_{v=1}^{V}
+\pi_\theta(v\mid c_t)
+\Big[
+&\log \pi_\theta(v\mid c_t) \\
+&-\log \pi_T(v\mid c_t)
+\Big].
+\end{aligned}
+\]
+for each rollout token. This elementwise KL computation costs \(O(BTV)\), which is lower order relative to the full-vocabulary projections and is omitted from the headline estimate. Therefore, full-vocabulary KL OPD requires
+\[
+\begin{aligned}
+F_{\mathrm{full}}
+&= F_{\mathrm{tr}}^{T}
++ 3F_{\mathrm{tr}}^{S}
++ F_{\mathrm{head}}^{T}
++ F_{\mathrm{head}}^{S,\mathrm{train}} \\
+&\approx 346.6 + 25.5 + 30.6 \\
+&= 402.7\ \mathrm{TFLOPs}.
+\end{aligned}
+\]
+Thus, avoiding the full-vocabulary distillation signal saves approximately
+\[
+402.7 - 346.6 = 56.1\ \mathrm{TFLOPs}
+\]
+per update, corresponding to a \(13.9\%\) reduction in distillation-update FLOPs. This estimate only counts arithmetic operations; in practice, full-vocabulary KL OPD also incurs additional memory traffic from materializing vocabulary-sized logits and KL tensors.
+
+
+\section{Derivation of the OPD Policy-Gradient Form}
+\label{app:opd-pg-derivation}
+
+We derive the policy-gradient form used for OPD and clarify why the log-ratio term can be viewed as a dense token-level reward. Let \(x\sim\mathcal{D}\) be a prompt and \(o=(o_1,\ldots,o_T)\sim\pi_\theta(\cdot\mid x)\) be a student rollout. We denote the prefix context before token \(o_t\) by
+\[
+c_t = (x,o_{<t}).
+\]
+By autoregressive factorization,
+\[
+\begin{aligned}
+\pi_\theta(o\mid x)
+&= \prod_{t=1}^{T}\pi_\theta(o_t\mid c_t), \\
+\pi_T(o\mid x)
+&= \prod_{t=1}^{T}\pi_T(o_t\mid c_t).
+\end{aligned}
+\]
+The reverse-KL objective minimized by OPD is
+\[
+D_{\mathrm{KL}}(\pi_\theta\Vert\pi_T)
+=
+\mathbb{E}_{x\sim\mathcal{D},\,o\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log \frac{\pi_\theta(o\mid x)}{\pi_T(o\mid x)}
+\right].
+\]
+Equivalently, OPD maximizes the negative reverse KL:
+\[
+J_{\mathrm{OPD}}(\theta)
+=
+\mathbb{E}_{x\sim\mathcal{D},\,o\sim\pi_\theta(\cdot\mid x)}
+\left[
+\log \frac{\pi_T(o\mid x)}{\pi_\theta(o\mid x)}
+\right].
+\]
+Using the autoregressive factorization, this sequence-level log ratio decomposes into token-level terms:
+\[
+\log \frac{\pi_T(o\mid x)}{\pi_\theta(o\mid x)}
+=
+\sum_{t=1}^{T}
+\log
+\frac{\pi_T(o_t\mid c_t)}
+     {\pi_\theta(o_t\mid c_t)}.
+\]
+This gives the dense token-level OPD reward
+\[
+r_t^{\mathrm{OPD}}(c_t,o_t)
+=
+\log
+\frac{\pi_T(o_t\mid c_t)}
+     {\pi_\theta(o_t\mid c_t)}.
+\]
+
+In practice, OPD is optimized with a policy-gradient surrogate in which the reward is treated as a stop-gradient scalar. For a sampled batch of rollout tokens, the empirical objective is
+\[
+\begin{aligned}
+\widehat{J}_{\mathrm{OPD}}(\theta)
+=
+\sum_{(c_t,o_t)\in\mathcal{B}}
+&\mathrm{sg}\!\left[
+r_t^{\mathrm{OPD}}(c_t,o_t)
+\right] \\
+&\cdot \log \pi_\theta(o_t\mid c_t).
+\end{aligned}
+\]
+where \(\mathrm{sg}[\cdot]\) denotes stop-gradient. Taking the gradient gives
+\[
+\begin{aligned}
+\nabla_\theta \widehat{J}_{\mathrm{OPD}}(\theta)
+&=
+\sum_{(c_t,o_t)\in\mathcal{B}}
+\mathrm{sg}\!\left[
+r_t^{\mathrm{OPD}}(c_t,o_t)
+\right] \\
+&\qquad\cdot
+\nabla_\theta \log \pi_\theta(o_t\mid c_t).
+\end{aligned}
+\]
+Taking expectation over prompts and student rollouts yields the policy-gradient form
+\[
+\begin{aligned}
+\nabla_\theta J_{\mathrm{OPD}}(\theta)
+&=
+\mathbb{E}_{\substack{
+x\sim\mathcal{D}\\
+o\sim\pi_\theta(\cdot\mid x)
+}}
+\Bigg[
+\sum_{t=1}^{T}
+\mathrm{sg}\!\left[
+\log
+\frac{\pi_T(o_t\mid c_t)}
+     {\pi_\theta(o_t\mid c_t)}
+\right] \\
+&\qquad\qquad\cdot
+\nabla_\theta \log \pi_\theta(o_t\mid c_t)
+\Bigg].
+\end{aligned}
+\]
+Thus, OPD can be implemented as dense-reward policy-gradient learning, where each sampled token receives the stop-gradient reward
+\[
+r_t^{\mathrm{OPD}}(c_t,o_t)
+=
+\log
+\frac{\pi_T(o_t\mid c_t)}
+     {\pi_\theta(o_t\mid c_t)}.
+\]
+This is the form used throughout the paper.

@@ -1,0 +1,5 @@
+\section{Conclusion}
+\label{sec:conclusion}
+ 
+We show that OPD's training instability stems from the unbounded log-ratio reward, and that standard post-hoc fixes are insufficient.
+We propose PowerOPD, a family of bounded, sign-consistent rewards from the Box-Cox power transformation parameterized by $\alpha > 0$, which consistently outperforms vanilla OPD and all post-hoc baselines, surpasses full-vocabulary OPD at substantially lower compute cost, and scales with $\alpha$ to simultaneously improve accuracy, shorten response length, and stabilize training dynamics throughout optimization.

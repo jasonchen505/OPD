@@ -1,0 +1,17 @@
+\section{Experimental Setup}
+\label{subsec:experimental-setup}
+
+
+
+\paragraph{Models.}
+We evaluate four teacher--student pairs spanning two student sizes and two teacher sizes: Qwen3-0.6B-Base and Qwen3-1.7B-Base as students, and Qwen3-4B and Qwen3-8B as teachers.
+
+\paragraph{Training.}
+We train on DeepScaleR~\citep{deepscaler2025} for 1.5k steps with bf16, learning rate \(5\times10^{-7}\), batch size 32, and on-policy rollouts up to 1024 tokens. Results are averaged over three runs.
+
+\paragraph{Evaluation.}
+We evaluate on six mathematical reasoning benchmarks: AIME24/25~\citep{maa_aime}, MATH-500~\citep{hendrycks2021math}, AMC23~\citep{maa_amc}, Minerva~\citep{minerva}, and OlympiadBench~\citep{OlympiadBench}. We report Avg@\(n\), Pass@\(n\), and average response length with \(n=8\).
+% Avg@\(n\) is the mean accuracy over \(n\) sampled responses per problem, Pass@\(n\) indicates whether any sampled response is correct, and average length is the mean number of generated tokens. We use temperature \(0.6\), top-\(p=0.95\), and a maximum generation length of 4096 tokens.
+
+\paragraph{Baselines.}
+Baselines include \emph{Vanilla OPD}, reward-stabilized variants (\emph{Clip}: \(c_l=-1,c_h=1\); \emph{Tanh}; \textbf{Z-Score}), and \emph{Full-vocabulary KL OPD}.
